@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Slf4j
 public class FifoMatchingStrategy implements OrderMatchingStrategy {

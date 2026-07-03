@@ -9,8 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
+/*
+* Simple Crud operation for OrderBook
+* */
 
 @Slf4j
 public class OrderBook implements IorderBook {
@@ -121,6 +123,28 @@ public class OrderBook implements IorderBook {
         } finally {
             lock.readLock().unlock();
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Order> getOrderById(String orderId) {
+
+        for(Map.Entry<String, List<Order>>e : this.orderBookMap.entrySet()) {
+            String stockSymbol = e.getKey();
+            ReadWriteLock lock = this.stockSymbolLocks.computeIfAbsent(stockSymbol, k -> new ReentrantReadWriteLock());
+            lock.readLock().lock();
+            try {
+                List<Order> orderList = e.getValue();
+                for(Order order: orderList) {
+                    if(order.getOrderId().equals(orderId)) {
+                        return Optional.of(order);
+                    }
+                }
+            } finally {
+                lock.readLock().unlock();
+            }
+        }
+
         return Optional.empty();
     }
 
