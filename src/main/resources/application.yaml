@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: stock-exchange
+
+server:
+  port: 8088
