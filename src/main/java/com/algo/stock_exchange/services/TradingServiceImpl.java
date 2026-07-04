@@ -24,13 +24,15 @@ public class TradingServiceImpl implements TradingService {
 
     private IorderBook orderBook;
     private OrderMatchingStrategy orderMatchingStrategy;
+    private TradeService tradeService;// CRUD operation related to Trade
 
     private final ExecutorService executorService;
 
-    public TradingServiceImpl(IorderBook orderBook, OrderMatchingStrategy orderMatchingStrategy) {
+    public TradingServiceImpl(IorderBook orderBook, OrderMatchingStrategy orderMatchingStrategy, TradeService tradeService) {
         this.orderBook = orderBook;
         this.orderMatchingStrategy = orderMatchingStrategy;
         this.executorService = Executors.newFixedThreadPool(10);
+        this.tradeService = tradeService;
     }
 
     @Override
@@ -64,6 +66,7 @@ public class TradingServiceImpl implements TradingService {
 
         for(Trade trade: executedTrades) {
             // save trades in DB
+            this.tradeService.saveTrade(trade);
         }
         this.orderBook.updateOrder(order);
 
