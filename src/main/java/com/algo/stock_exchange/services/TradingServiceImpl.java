@@ -1,11 +1,11 @@
-package com.algo.stock_exchange.services.strategy;
+package com.algo.stock_exchange.services;
 
 import com.algo.stock_exchange.models.Order;
 import com.algo.stock_exchange.models.OrderStatus;
 import com.algo.stock_exchange.models.OrderType;
 import com.algo.stock_exchange.models.Trade;
-import com.algo.stock_exchange.services.TradingService;
 import com.algo.stock_exchange.services.helpers.IorderBook;
+import com.algo.stock_exchange.services.strategy.OrderMatchingStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Slf4j
