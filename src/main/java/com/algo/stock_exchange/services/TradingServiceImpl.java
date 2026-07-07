@@ -5,6 +5,7 @@ import com.algo.stock_exchange.models.OrderStatus;
 import com.algo.stock_exchange.models.OrderType;
 import com.algo.stock_exchange.models.Trade;
 import com.algo.stock_exchange.services.helpers.IorderBook;
+import com.algo.stock_exchange.services.strategy.OrderExpiryStrategy;
 import com.algo.stock_exchange.services.strategy.OrderMatchingStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,16 @@ public class TradingServiceImpl implements TradingService {
     private IorderBook orderBook;
     private OrderMatchingStrategy orderMatchingStrategy;
     private TradeService tradeService;// CRUD operation related to Trade
+    private OrderExpiryStrategy orderExpiryStrategy;
 
     private final ExecutorService executorService;
 
-    public TradingServiceImpl(IorderBook orderBook, OrderMatchingStrategy orderMatchingStrategy, TradeService tradeService) {
+    public TradingServiceImpl(IorderBook orderBook, OrderMatchingStrategy orderMatchingStrategy, TradeService tradeService, OrderExpiryStrategy orderExpiryStrategy) {
         this.orderBook = orderBook;
         this.orderMatchingStrategy = orderMatchingStrategy;
         this.executorService = Executors.newFixedThreadPool(10);
         this.tradeService = tradeService;
+        this.orderExpiryStrategy = orderExpiryStrategy;
     }
 
     @Override
@@ -59,6 +62,7 @@ public class TradingServiceImpl implements TradingService {
         List<Order> orderList = this.orderBook.getOrders(symbol);
         List<Order> filteredOrders = orderList.stream()
                 .filter(o-> !order.getOrderId().equals(o.getOrderId()))
+                .filter(o -> !this.orderExpiryStrategy.checkOrderExpiry(o)) // filtering expired orders
                 .collect(Collectors.toList());
 
         List<Trade> executedTrades = this.orderMatchingStrategy.matchOrder(order, filteredOrders);
